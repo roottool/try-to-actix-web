@@ -1,8 +1,5 @@
-use axum::{
-    // Json,
-    routing::get,
-    Router,
-};
+use axum::{response::IntoResponse, routing::get, Json, Router};
+use serde::Serialize;
 use std::net::SocketAddr;
 use tracing_subscriber::FmtSubscriber;
 
@@ -25,7 +22,18 @@ async fn main() {
 }
 
 #[tracing::instrument]
-async fn hello() -> &'static str {
+async fn hello() -> impl IntoResponse {
     tracing::info!("Access health check");
-    "Hello, World!"
+
+    let hello_world = HelloWorld {
+        country: "Japan",
+        hello_world: "ハローワールド",
+    };
+    Json(hello_world)
+}
+
+#[derive(Serialize)]
+struct HelloWorld<'a> {
+    country: &'a str,
+    hello_world: &'a str,
 }
